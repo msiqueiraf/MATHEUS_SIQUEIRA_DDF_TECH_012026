@@ -1,4 +1,4 @@
-# 🚀 Case Técnico Dadosfera - Analista de Dados
+# Case Técnico Dadosfera - Analista de Dados
 
 **Candidato:** Matheus Siqueira
 **Data:** Janeiro/2026
@@ -46,12 +46,12 @@ Realizei a ingestão dos arquivos CSV brutos para a camada de **Coleta** da Dado
 
 ## 🕵️ Item 4: Data Quality
 
-Utilizei a biblioteca **Great Expectations** (versão Python) para implementar testes automatizados de qualidade de dados, gerando um relatório técnico de auditoria antes do consumo dos dados.
+Desenvolvi um pipeline de auditoria automatizada em Python que valida a integridade dos dados seguindo os princípios e regras do framework **Great Expectations**.
 
 **Regras de Auditoria Aplicadas:**
-1.  **Consistência de Domínio:** `expect_column_values_to_be_between(1, 5)` na coluna `review_score` para garantir que as notas sigam a regra de negócio.
-2.  **Integridade Referencial:** `expect_column_values_to_not_be_null` na coluna `review_id` para assegurar unicidade e rastreabilidade.
-3.  **Completo:** Validação estatística de Mínimo, Máximo e Média global.
+1. **Consistência de Domínio:** Validação estatística para garantir que a coluna `review_score` contenha apenas valores entre 1 e 5 (Regra de Negócio).
+2. **Integridade Referencial:** Verificação de nulidade na chave primária `review_id` para assegurar rastreabilidade única dos pedidos.
+3. **Completo:** Geração de estatísticas descritivas (Mínimo, Máximo e Média) para monitoramento de saúde da base.
 
 **Evidência do Relatório de Qualidade:**
 ![Relatório de Data Quality](assets/item4_data_quality.png)
@@ -60,15 +60,15 @@ Utilizei a biblioteca **Great Expectations** (versão Python) para implementar t
 
 ## 🤖 Item 5: Enriquecimento de Dados com IA (NLP)
 
-O dataset original possuía milhares de comentários em texto livre (`review_comment_message`). Dados desestruturados são difíceis de analisar quantitativamente em Dashboards.
+O dataset original possuía milhares de comentários em texto livre (`review_comment_message`). Para estruturar esses dados, desenvolvi um pipeline de **Feature Engineering** com foco em Análise de Sentimento.
 
-**Solução Aplicada:**
-Desenvolvi um pipeline de **Feature Engineering** utilizando **Processamento de Linguagem Natural (NLP)** para transformar texto em dados estruturados.
+**Solução Aplicada (Motor Híbrido):**
+Implementei um algoritmo de inferência que calibra a **Polaridade de Sentimento** correlacionando o texto com o *Ground Truth* (Nota do Cliente). Isso garante precisão semântica para o idioma Português (PT-BR), superando limitações de modelos treinados apenas em inglês.
 
-* **Entrada (Input):** Texto bruto do cliente (Ex: "Produto excelente, entrega rápida").
-* **Processamento:** Algoritmo de classificação de sentimento (Polaridade e Regras de Negócio).
-* **Saída (Output):** Nova dimensão `Sentimento` (Positivo 🟢 / Neutro 🟡 / Negativo 🔴).
-* **Impacto:** Permitiu a criação de KPIs de satisfação baseados em texto, não apenas na nota numérica.
+* **Entrada (Input):** Texto bruto do cliente.
+* **Processamento:** Cálculo de polaridade matemática calibrada pelo score da avaliação.
+* **Saída (Output):** Métricas de `Polaridade` (-1.0 a +1.0) e Classificação (`Positivo` 🟢 / `Neutro` 🟡 / `Negativo` 🔴).
+* **Impacto:** Permitiu a criação de visuais avançados no Dashboard baseados na intensidade do sentimento do cliente.
 
 **Evidência do Pipeline de NLP:**
 ![Output do Script de IA](assets/item5_nlp.png)
@@ -95,10 +95,10 @@ Optei por utilizar o **Power BI** (ferramenta externa) para entregar uma anális
 **Link para o Arquivo:** [Dashboard Power BI (.pbix)](./dashboard_analise_olist.pbix)
 
 **Visualizações Desenvolvidas:**
-1.  **KPIs Executivos:** Receita Total, Ticket Médio e Volumetria.
-2.  **Análise Geoespacial:** Mapa de calor de vendas por Estado (Bônus 2).
-3.  **Série Temporal:** Evolução de vendas por mês/ano.
-4.  **Análise de Qualidade:** Distribuição das notas de satisfação (Enriquecida com os dados de Reviews).
+1. **KPIs Executivos:** Receita Total, Ticket Médio e Volumetria.
+2. **Análise Geoespacial:** Mapa de calor de vendas por Estado (Bônus 2).
+3. **Série Temporal:** Evolução de vendas por mês/ano.
+4. **Análise de Qualidade:** Distribuição das notas de satisfação (Enriquecida com os dados de Reviews).
 
 **Preview do Dashboard:**
 ![Dashboard Final Power BI](assets/item7_dashboard.png)
@@ -110,10 +110,10 @@ Optei por utilizar o **Power BI** (ferramenta externa) para entregar uma anális
 Para garantir a atualização contínua e a governança dos dados, desenhei um pipeline de ingestão na Dadosfera que automatiza a coleta dos arquivos brutos (Raw Data) para a camada de processamento.
 
 **Fluxo Desenhado:**
-1.  **Coleta:** Leitura incremental de arquivos CSV armazenados em Bucket S3 (`raw-data-olist`).
-2.  **Ingestão:** Carga para a Landing Zone da Dadosfera.
-3.  **Catalogação:** Registro automático de metadados técnicos.
-4.  **Agendamento:** Execução diária automatizada.
+1. **Coleta:** Leitura incremental de arquivos CSV armazenados em Bucket S3 (`raw-data-olist`).
+2. **Ingestão:** Carga para a Landing Zone da Dadosfera.
+3. **Catalogação:** Registro automático de metadados técnicos.
+4. **Agendamento:** Execução diária automatizada.
 
 **Evidência do Pipeline Catalogado:**
 ![Pipeline Dadosfera](assets/item8_pipeline.png)
@@ -136,13 +136,13 @@ Desenvolvi uma aplicação interativa utilizando o framework **Streamlit** (Pyth
 ### 🛠️ Como Executar este Data App
 Conforme as diretrizes do case, o desenvolvimento foi realizado utilizando o **Google Colab**. Para reproduzir o ambiente ou executar localmente:
 
-1.  **Pré-requisitos:** Python 3.9+, Streamlit, Pandas e Plotly.
-2.  **Instalação:** `pip install streamlit pandas plotly`
-3.  **Execução:** Navegue até a pasta do projeto e execute no terminal:
+1. **Pré-requisitos:** Python 3.9+, Streamlit, Pandas e Plotly.
+2. **Instalação:** `pip install streamlit pandas plotly`
+3. **Execução:** Navegue até a pasta do projeto e execute no terminal:
     ```bash
     streamlit run app.py
     ```
-4.  **Acesso Remoto (Cloud):** Durante o desenvolvimento, utilizei túnel via **Ngrok** para expor a aplicação rodando no Colab diretamente para a web, simulando um deploy em cloud.
+4. **Acesso Remoto (Cloud):** Durante o desenvolvimento, utilizei túnel via **Ngrok** para expor a aplicação rodando no Colab diretamente para a web, simulando um deploy em cloud.
 
 ---
 
