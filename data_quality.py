@@ -1,111 +1,118 @@
+"""
+PIPELINE DE OBSERVABILIDADE E ENRIQUECIMENTO DE DADOS
+Candidato: Matheus Siqueira
+Projeto: Case Técnico Dadosfera - Brazilian E-Commerce (Olist)
+"""
+
 import pandas as pd
 import sys
 import os
-import random
+import spacy
 
 # ==============================================================================
-# 1. CONFIGURAÇÃO E CARGA DE DADOS
+# 1. SETUP E CARREGAMENTO DE MODELOS (IA/NLP)
 # ==============================================================================
-FILE_NAME = 'olist_order_reviews.csv'
+def load_nlp_model():
+    """Garante o carregamento do modelo pt_core_news_sm do spaCy."""
+    try:
+        return spacy.load("pt_core_news_sm")
+    except OSError:
+        print("ℹ️ Instalando modelo de linguagem pt_core_news_sm...")
+        os.system("python -m spacy download pt_core_news_sm")
+        return spacy.load("pt_core_news_sm")
 
-print("\n" + "="*100)
-print("🚀 EXECUÇÃO DO PIPELINE: DATA QUALITY & FEATURE ENGINEERING")
-print("="*100)
-
-if not os.path.exists(FILE_NAME):
-    print(f"❌ ERRO CRÍTICO: Dataset '{FILE_NAME}' não localizado no diretório.")
-    sys.exit()
-
-df = pd.read_csv(FILE_NAME)
-print(f"✅ Carga concluída. Volume total: {len(df):,} registros.")
+nlp = load_nlp_model()
 
 # ==============================================================================
-# 2. DATA QUALITY CHECKS
+# 2. MOTOR DE INFERÊNCIA HÍBRIDA (ITEM 5)
 # ==============================================================================
-print("\n" + "="*100)
-print("🕵️  RELATÓRIO DE AUDITORIA DE DADOS")
-print("="*100)
-
-# CHECK 01: DOMÍNIO (Review Score)
-print("\n[CHECK 01] Consistência de Domínio: 'review_score'")
-print("   ℹ️  Regra: Valores devem estar no intervalo [1, 5].")
-
-min_s = df['review_score'].min()
-max_s = df['review_score'].max()
-mean_s = df['review_score'].mean()
-errors = df[~df['review_score'].between(1, 5)]
-
-print(f"   📊 Estatísticas Descritivas:")
-print(f"       - Min: {min_s} | Max: {max_s}")
-print(f"       - Média: {mean_s:.2f}")
-
-if len(errors) == 0:
-    print("   ✅ STATUS: PASS (Conformidade Total)")
-else:
-    print(f"   ❌ STATUS: FAIL ({len(errors)} inconsistências)")
-
-# CHECK 02: COMPLETUDE (Primary Keys)
-print("\n[CHECK 02] Completude: 'review_id'")
-print("   ℹ️  Regra: Chave primária não pode conter valores nulos.")
-
-nulls = df['review_id'].isnull().sum()
-print(f"   📊 Registros Nulos: {nulls}")
-
-if nulls == 0:
-    print("   ✅ STATUS: PASS")
-else:
-    print(f"   ❌ STATUS: FAIL")
-
-# ==============================================================================
-# 3. FEATURE ENGINEERING (NLP / SENTIMENT)
-# ==============================================================================
-print("\n\n" + "="*100)
-print("🤖  PIPELINE DE ENRIQUECIMENTO (NLP)")
-print("="*100)
-print("ℹ️  Aplicando algoritmo de inferência de polaridade e classificação de sentimento.\n")
-
-def calculate_sentiment_polarity(text, score):
+def get_sentiment_engine(text, score):
     """
-    Calcula a polaridade do sentimento utilizando o score como baseline (ground truth)
-    com variação estocástica para modelagem de distribuição.
+    Analisa o sentimento combinando semântica (NLP) com Ground Truth (Score).
+    Retorna a polaridade normalizada e o rótulo alinhado para logs.
     """
-    # Seed baseada no input para garantir reprodutibilidade e consistência
-    random.seed(len(text) + score) 
-    
-    if score >= 4:
-        # Faixa de polaridade positiva
-        polarity = random.uniform(0.45, 0.98)
+    if pd.isna(text) or text.strip() == "":
+        # Baseline matemático quando o comentário está ausente
+        polarity = (score - 3) / 2
+    else:
+        # Processamento via spaCy (Tokenization e Lemmatization)
+        doc = nlp(str(text).lower())
+        pos_lemmas = ['bom', 'ótimo', 'excelente', 'rápido', 'recomendo', 'parabéns']
+        neg_lemmas = ['ruim', 'péssimo', 'atraso', 'lento', 'horrível', 'quebrado']
+        
+        pos_count = sum(1 for t in doc if t.lemma_ in pos_lemmas)
+        neg_count = sum(1 for t in doc if t.lemma_ in neg_lemmas)
+        
+        # Cálculo de Polaridade Híbrida (70% Semântica | 30% Nota do Cliente)
+        base_pol = (pos_count - neg_count) / (pos_count + neg_count + 1)
+        score_adj = (score - 3) / 2
+        polarity = (base_pol * 0.7) + (score_adj * 0.3)
+
+    # Normalização de labels para alinhamento vertical perfeito no console
+    if polarity > 0.15:
         label = "POSITIVO 🟢"
-    elif score <= 2:
-        # Faixa de polaridade negativa
-        polarity = random.uniform(-0.95, -0.40)
+    elif polarity < -0.15:
         label = "NEGATIVO 🔴"
     else:
-        # Zona neutra
-        polarity = random.uniform(-0.15, 0.15)
-        label = "NEUTRO 🟡"
+        label = "NEUTRO   🟡" # Espaçamento para alinhar com os labels de 8 caracteres
         
-    return polarity, label
+    return round(polarity, 4), label
 
-# Seleção de amostra para validação (apenas registros com texto não nulo)
-sample_df = df.dropna(subset=['review_comment_message']).head(15)
+# ==============================================================================
+# 3. PIPELINE PRINCIPAL (DATA QUALITY AUDIT)
+# ==============================================================================
+def run_pipeline():
+    FILE_NAME = 'olist_order_reviews.csv'
 
-# Output formatado para log de execução
-print(f"{'REVIEW (TEXTO BRUTO)':<80} | {'POLARIDADE':<12} | {'CLASS.'}")
-print("-" * 115)
+    print("\n" + "="*100)
+    print("🚀 DADOSFERA PIPELINE: DATA QUALITY AUDIT & ADVANCED NLP")
+    print("="*100)
 
-for idx, row in sample_df.iterrows():
-    raw_text = str(row['review_comment_message'])
-    score = row['review_score']
+    if not os.path.exists(FILE_NAME):
+        print(f"❌ ERRO CRÍTICO: Dataset '{FILE_NAME}' não localizado.")
+        return
+
+    # Ingestão para Auditoria
+    df = pd.read_csv(FILE_NAME)
+    print(f"✅ Ingestão concluída. Registros para análise: {len(df):,}")
+
+    # 🕵️ ITEM 4: DATA QUALITY E OBSERVABILIDADE
+    print("\n" + "="*100)
+    print("🕵️  RELATÓRIO DE AUDITORIA DE DADOS (DATA CONTRACTS)")
+    print("="*100)
+
+    # Check 01: Domínio (review_score)
+    print(f"\n[CHECK 01] Consistência de Domínio: 'review_score'")
+    min_s, max_s, mean_s = df['review_score'].min(), df['review_score'].max(), df['review_score'].mean()
+    errors_dom = df[~df['review_score'].between(1, 5)]
+    print(f"    📊 Health Check: Min: {min_s} | Max: {max_s} | Média: {mean_s:.2f}")
+    print(f"    ✅ STATUS: {'PASS' if len(errors_dom) == 0 else 'FAIL'}")
+
+    # Check 02: Integridade (review_id)
+    print(f"\n[CHECK 02] Integridade Referencial: 'review_id'")
+    nulls_id = df['review_id'].isnull().sum()
+    print(f"    📊 Registros Nulos: {nulls_id}")
+    print(f"    ✅ STATUS: {'PASS' if nulls_id == 0 else 'FAIL'}")
+
+    # 🤖 ITEM 5: ENRIQUECIMENTO DE IA
+    print("\n\n" + "="*100)
+    print("🤖  PIPELINE DE ENRIQUECIMENTO: NLP FEATURE ENGINEERING")
+    print("="*100)
     
-    # Processamento
-    pol, lbl = calculate_sentiment_polarity(raw_text, score)
+    # Amostra para validação visual dos resultados
+    sample = df.dropna(subset=['review_comment_message']).head(15).copy()
     
-    # Tratamento de string para visualização tabular (remove quebras de linha e normaliza espaços)
-    clean_text = " ".join(raw_text.split())
-    display_text = (clean_text[:75] + '...') if len(clean_text) > 75 else clean_text
-    
-    print(f"{display_text:<80} | {pol:+.4f}      | {lbl}")
+    print(f"{'REVIEW (NLP INPUT)':<75} | {'POLARIDADE':<10} | {'CLASS.'}")
+    print("-" * 115)
 
-print("-" * 115)
-print("\n✅ Pipeline finalizado com sucesso.")
+    for _, row in sample.iterrows():
+        pol, lbl = get_sentiment_engine(row['review_comment_message'], row['review_score'])
+        txt = " ".join(str(row['review_comment_message']).split())
+        display_txt = (txt[:72] + '...') if len(txt) > 72 else txt
+        print(f"{display_txt:<75} | {pol:+.4f}   | {lbl:<12}")
+
+    print("-" * 115)
+    print(f"✅ Pipeline finalizado com sucesso às {pd.Timestamp.now()}.")
+
+if __name__ == "__main__":
+    run_pipeline()
