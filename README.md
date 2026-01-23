@@ -1,10 +1,8 @@
 # Case Técnico Dadosfera - Analista de Dados
 
-**Candidato:** Matheus Siqueira
-**Data:** Janeiro/2026
-**Repositório:** MATHEUS_SIQUEIRA_DDF_TECH_012026
-**Localização:** Maringá - PR
-
+* **Candidato:** Matheus Siqueira
+* **Data:** Janeiro de 2026
+* **Repositório:** MATHEUS_SIQUEIRA_DDF_TECH_012026
 ---
 
 ## 📋 Item 0: Agilidade e Planejamento
