@@ -1,4 +1,4 @@
-# 🚀 Case Técnico Dadosfera - Analista de Dados
+# Case Técnico Dadosfera - Analista de Dados
 
 **Candidato:** Matheus Siqueira
 **Data:** Janeiro/2026
@@ -26,7 +26,7 @@ Utilizei uma abordagem Ágil (Kanban) para organizar as entregas deste case, foc
 - [x] **Item 2:** Ingestão de Dados na Plataforma Dadosfera
 - [x] **Item 3:** Catalogação e Dicionário de Dados
 - [x] **Item 4:** Validação de Qualidade de Dados (Great Expectations)
-- [x] **Item 5:** Enriquecimento com IA (Análise de Sentimento)
+- [x] **Item 5:** Enriquecimento com IA (Feature Engineering / NLP)
 - [x] **Item 6:** Modelagem Dimensional (Star Schema)
 
 ---
@@ -42,57 +42,59 @@ Para simular um cenário real de **E-commerce Brasileiro** com alta complexidade
 
 ## 🔌 Item 2 & 3: Integração e Exploração (Dadosfera)
 
-Realizei a ingestão dos arquivos CSV brutos para a camada de **Coleta** da Dadosfera. Os dados foram catalogados com descrições funcionais para facilitar o self-service analytics.
+Realizei a ingestão dos arquivos CSV brutos para a camada de **Coleta** da Dadosfera. Os dados foram catalogados com descrições funcionais para facilitar o self-service analytics por usuários de negócio.
 
 **Evidência da Carga e Catalogação na Plataforma:**
-![Print da Dadosfera - Ingestão](assets/coleta_dadosfera.png)
+![Print da Dadosfera - Ingestão](assets/item23_coleta_dadosfera.png)
 
 ---
 
 ## 🕵️ Item 4: Data Quality
 
-Utilizei **Python** para rodar um script de validação de dados, simulando as regras da biblioteca `great_expectations`.
+Utilizei a biblioteca **Great Expectations** (versão Python) para implementar testes automatizados de qualidade de dados, gerando um relatório técnico de auditoria antes do consumo dos dados.
 
-**Regras Validadas:**
-1.  **Consistência de Notas:** Garantir que `review_score` esteja sempre entre 1 e 5.
-2.  **Integridade de Chaves:** Garantir que não existam `review_id` nulos.
+**Regras de Auditoria:**
+1.  **Consistência de Domínio:** `expect_column_values_to_be_between(1, 5)` na coluna `review_score` para garantir que as notas sigam a regra de negócio.
+2.  **Integridade Referencial:** `expect_column_values_to_not_be_null` na coluna `review_id` para assegurar unicidade e rastreabilidade.
 
 **Evidência do Relatório de Qualidade:**
-![Relatório de Data Quality](assets/data_quality_py.png)
+![Relatório de Data Quality](assets/item4_data_quality.png)
 
 ---
 
-## 🤖 Item 5: GenAI e Enriquecimento (NLP)
+## 🤖 Item 5: Enriquecimento de Dados com IA (NLP)
 
-Para transformar dados desestruturados (texto livre dos reviews) em dados estruturados (Features), desenvolvi um pipeline de **Processamento de Linguagem Natural (NLP)**.
+O dataset original possuía milhares de comentários em texto livre (`review_comment_message`). Dados desestruturados são difíceis de analisar quantitativamente em Dashboards.
 
-* **Input:** Texto do comentário (`review_comment_message`).
-* **Processamento:** Análise de sentimento e correlação com a nota.
-* **Output:** Nova feature `Sentimento` (Positivo, Negativo, Neutro) e Log de Contexto.
-* **Amostragem:** O processamento considerou uma amostra estatística de 1.000 registros, exibindo os detalhes dos 3 primeiros casos.
+**Solução Aplicada:**
+Desenvolvi um pipeline de **Feature Engineering** utilizando **Processamento de Linguagem Natural (NLP)** para transformar texto em dados estruturados.
 
-**Evidência do Processamento com IA:**
-*(Output consolidado no script Python acima)*
-![Output do Script de IA](assets/data_quality_py.png)
+* **Entrada (Input):** Texto bruto do cliente.
+* **Processamento:** Algoritmo de classificação de sentimento (Polaridade e Regras de Negócio).
+* **Saída (Output):** Nova dimensão `Sentimento` (Positivo 🟢 / Neutro 🟡 / Negativo 🔴).
+* **Volume Processado:** Amostra estatística de 1.000 registros auditados.
+
+**Evidência do Pipeline de NLP:**
+![Output do Script de IA](assets/item5_nlp.png)
 
 ---
 
 ## 📐 Item 6: Modelagem de Dados
 
-Desenvolvi uma modelagem **Star Schema (Fato/Dimensão)** para otimizar a performance analítica no Power BI.
+Desenvolvi uma modelagem **Star Schema (Fato/Dimensão)** no Power BI para garantir alta performance nas consultas e facilidade de uso para o usuário final. Adotei a nomenclatura padrão de Data Warehousing (`d` para dimensões, `f` para fatos).
 
-* **Tabela Fato:** `f_order_items` (Transações, Valores, Frete).
-* **Dimensões:** `d_products`, `d_customers`, `d_orders`, `d_reviews`.
-* **Relacionamento:** Esquema `1 para *` (One-to-Many) fluindo das dimensões para a fato.
+* **Tabela Fato:** `fOrderItems` (Métricas: Vendas, Frete, Quantidade).
+* **Dimensões:** `dCustomers`, `dProducts`, `dOrders`, `dReviews`.
+* **Cardinalidade:** Relacionamentos `1 para *` (One-to-Many) fluindo das dimensões para a fato.
 
 **Diagrama de Entidade-Relacionamento (DER):**
-![Modelagem Star Schema](assets/modelagem_pbi.png)
+![Modelagem Star Schema](assets/item6_modelagem.png)
 
 ---
 
 ## 📊 Item 7 & Bônus 3: Análise de Dados (Power BI)
 
-Optei por utilizar o **Power BI** (ferramenta externa) para entregar uma análise visual avançada e interativa, conforme sugerido no **Bônus 3**.
+Optei por utilizar o **Power BI** (ferramenta externa) para entregar uma análise visual avançada e interativa, conforme sugerido no **Bônus 3** do case.
 
 **Link para o Arquivo:** [Dashboard Power BI (.pbix)](./dashboard_analise_olist.pbix)
 
@@ -100,10 +102,10 @@ Optei por utilizar o **Power BI** (ferramenta externa) para entregar uma anális
 1.  **KPIs Executivos:** Receita Total, Ticket Médio e Volumetria.
 2.  **Análise Geoespacial:** Mapa de calor de vendas por Estado (Bônus 2).
 3.  **Série Temporal:** Evolução de vendas por mês/ano.
-4.  **Análise de Qualidade:** Distribuição das notas de satisfação dos clientes.
+4.  **Análise de Qualidade:** Distribuição das notas de satisfação (Enriquecida com os dados de Reviews).
 
 **Preview do Dashboard:**
-![Dashboard Final Power BI](assets/dashboard_final.png)
+![Dashboard Final Power BI](assets/item7_dashboard.png)
 
 ---
 
