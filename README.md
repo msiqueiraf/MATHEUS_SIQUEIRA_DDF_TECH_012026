@@ -77,11 +77,28 @@ Implementei um algoritmo de inferência que calibra a **Polaridade de Sentimento
 
 ## 📐 Item 6: Modelagem de Dados
 
-Desenvolvi uma modelagem **Star Schema (Fato/Dimensão)** no Power BI para garantir alta performance nas consultas e facilidade de uso para o usuário final. Adotei a nomenclatura padrão de Data Warehousing (`d` para dimensões, `f` para fatos).
+Desenvolvi uma modelagem **Star Schema (Fato/Dimensão)** no Power BI para garantir alta performance nas consultas DAX e facilidade de uso para o usuário final. Adotei a nomenclatura padrão de Data Warehousing (`d` para dimensões, `f` para fatos).
 
-* **Tabela Fato:** `fOrderItems` (Métricas: Vendas, Frete, Quantidade).
-* **Dimensões:** `dCustomers`, `dProducts`, `dOrders`, `dReviews`.
-* **Cardinalidade:** Relacionamentos `1 para *` (One-to-Many) fluindo das dimensões para a fato.
+### Estrutura do Modelo
+* **Tabela Fato (`fOrderItems`):** Contém os dados transacionais (granularidade por item vendido).
+    * *Métricas:* Valor de Venda, Valor de Frete, Quantidade.
+* **Dimensões (`d...`):** Tabelas auxiliares que fornecem contexto descritivo.
+    * `dProducts` (Categorias e características dos itens).
+    * `dOrders` (Status e datas do pedido).
+    * `dCustomers` (Localização e dados do cliente).
+    * `dReviews` (Comentários e notas de satisfação).
+
+### 🔗 Relacionamentos e Cardinalidade
+As tabelas foram conectadas utilizando relacionamentos **Um-para-Muitos (1:*)** fluindo das dimensões para a fato, garantindo a filtragem correta (propagação de filtro):
+
+1. **`dProducts` (1) ➡️ (*) `fOrderItems`**: Conectado via `product_id`.
+   * *Objetivo:* Analisar receita e volume por categoria de produto.
+2. **`dOrders` (1) ➡️ (*) `fOrderItems`**: Conectado via `order_id`.
+   * *Objetivo:* Trazer datas e status para cada item vendido.
+3. **`dCustomers` (1) ➡️ (*) `dOrders`**: Conectado via `customer_id`.
+   * *Objetivo:* Segmentar pedidos e faturamento por Estado/Cidade do cliente.
+4. **`dOrders` (1) ➡️ (*) `dReviews`**: Conectado via `order_id`.
+   * *Objetivo:* Correlacionar atrasos de entrega (da tabela Orders) com a nota de satisfação (da tabela Reviews).
 
 **Diagrama de Entidade-Relacionamento (DER):**
 ![Modelagem Star Schema](assets/item6_modelagem.png)
