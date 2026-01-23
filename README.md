@@ -17,8 +17,8 @@ Utilizei uma abordagem Ágil (Kanban) para organizar as entregas deste case, pri
 - [x] **Item 1:** Seleção do Dataset (Brazilian E-Commerce Olist)
 - [x] **Item 2:** Ingestão de Dados na Plataforma Dadosfera
 - [x] **Item 3:** Catalogação e Dicionário de Dados
-- [x] **Item 4:** Validação de Qualidade de Dados (Great Expectations)
-- [x] **Item 5:** Enriquecimento com IA (Feature Engineering / NLP)
+- [x] **Item 4:** Validação de Qualidade de Dados (Observabilidade)
+- [x] **Item 5:** Enriquecimento com IA (Power Query + NLP)
 - [x] **Item 6:** Modelagem Dimensional (Star Schema)
 - [x] **Item 7:** Dashboard Analítico (Power BI)
 - [x] **Item 8:** Orquestração de Pipelines (ETL)
@@ -46,63 +46,49 @@ Realizei a ingestão dos arquivos CSV brutos para a camada de **Coleta** da Dado
 
 ## 🕵️ Item 4: Data Quality (Observabilidade)
 
-Implementei um pipeline de auditoria automatizada fundamentado em **Data Contracts** e observabilidade de dados. Utilizei uma lógica de validação inspirada no framework *Great Expectations* para garantir que apenas dados íntegros e confiáveis avancem para a camada de modelagem. Todo o motor de auditoria e monitoramento está centralizado no arquivo **`data_quality.py`** na raiz do repositório.
+Implementei um pipeline de auditoria automatizada fundamentado em **Data Contracts** e observabilidade de dados. Utilizei uma lógica de validação inspirada nos princípios do framework *Great Expectations* para garantir que apenas dados íntegros alimentem a camada de modelagem.
+
+Toda a inteligência de auditoria e monitoramento de saúde da base está centralizada no arquivo **`data_quality.py`** localizado na raiz deste repositório.
 
 **Regras de Auditoria Aplicadas:**
 * **Consistência de Domínio:** Validação estatística rigorosa para garantir que a coluna `review_score` esteja dentro do intervalo esperado de **1 a 5**.
-* **Integridade Referencial:** Check de completude na **Chave Primária** `review_id` (Zero Nulls), assegurando a unicidade e rastreabilidade total dos registros.
-* **Health Check & Monitoring:** Geração automática de métricas descritivas (Mínimo, Máximo e Média) para monitoramento de saúde da base e detecção precoce de anomalias.
+* **Integridade Referencial:** Check de completude na **Chave Primária** `review_id` (Zero Nulls), assegurando a rastreabilidade total dos registros.
+* **Health Check & Monitoring:** Geração automática de métricas descritivas (Mínimo, Máximo e Média) para detecção precoce de anomalias.
 
 ---
 
-## 🤖 Item 5: Enriquecimento com IA (NLP Avançado)
+## 🤖 Item 5: Enriquecimento com IA (Advanced NLP no Power BI)
 
-Para processar o volume de textos desestruturados (`review_comment_message`), desenvolvi um motor de **Processamento de Linguagem Natural (NLP)** robusto utilizando a biblioteca **spaCy** com o modelo pré-treinado `pt_core_news_sm`.
+Este item representa o diferencial técnico do case. Implementei um motor de **Processamento de Linguagem Natural (NLP)** utilizando a biblioteca **spaCy** (modelo `pt_core_news_sm`) integrado diretamente ao **Power Query** através de um script Python.
 
 **Diferencial Técnico: Motor de Inferência Híbrida**
-Diferente de abordagens básicas que sofrem com o "viés do neutro" (onde comentários claros são classificados como zero), implementei uma **Calibração de Ground Truth**. O algoritmo correlaciona a semântica extraída via IA com a nota real deixada pelo cliente, calibrando a polaridade final para refletir a experiência real do usuário.
+Para superar as limitações de modelos de prateleira que sofrem com "falsos neutros", desenvolvi um algoritmo de **Calibração de Ground Truth**. Ele correlaciona a semântica extraída via IA com a nota real deixada pelo cliente, ajustando a polaridade final para refletir a experiência real do usuário.
 
-* **Processamento Semântico:** Uso de *Tokenization* e *Lemmatization* em português brasileiro para identificar a raiz semântica do sentimento.
-* **Métricas de Saída:** Geração das colunas `Polaridade_IA` (escala contínua de -1.0 a +1.0) e `Sentimento_IA` (classificação categórica com alinhamento visual para logs).
-* **Implementação e Portabilidade:** A lógica está encapsulada no script **`data_quality.py`**. O código foi portado para o **Power Query** (Python Step), permitindo o enriquecimento dinâmico do modelo de dados diretamente no Power BI.
+* **Processamento Semântico:** Uso de *Tokenization* e *Lemmatization* em português brasileiro para identificar a raiz do sentimento.
+* **Integração Dinâmica:** A lógica do script **`data_quality.py`** foi portada para o Power BI, permitindo que a inteligência de dados seja re-executada a cada atualização do dataset.
+* **Métricas Geradas:** Colunas de `Polaridade_IA` e `Sentimento_IA` (com classificação alinhada visualmente).
 
-**Evidência do Enriquecimento (Log de Execução):**
-![Pipeline de NLP Alinhado](assets/item5_nlp_log.png)
+**Evidência da Integração (Python no Power Query):**
+![Placeholder: Print do Power Query executando o script Python](assets/powerquery_python_integration.png)
 
 ---
 
 ## 📐 Item 6: Modelagem de Dados
 
-Desenvolvi uma modelagem **Star Schema (Fato/Dimensão)** no Power BI para garantir alta performance nas consultas DAX e facilidade de uso para o usuário final. Adotei a nomenclatura padrão de Data Warehousing (`d` para dimensões, `f` para fatos).
+Desenvolvi uma modelagem **Star Schema (Fato/Dimensão)** no Power BI para garantir alta performance nas consultas DAX. Adotei a nomenclatura padrão de Data Warehousing (`d` para dimensões, `f` para fatos).
 
 ### Estrutura do Modelo
-* **Tabela Fato (`fOrderItems`):** Contém os dados transacionais (granularidade por item vendido).
-    * *Métricas:* Valor de Venda, Valor de Frete, Quantidade.
-* **Dimensões (`d...`):** Tabelas auxiliares que fornecem contexto descritivo.
-    * `dProducts` (Categorias e características dos itens).
-    * `dOrders` (Status e datas do pedido).
-    * `dCustomers` (Localização e dados do cliente).
-    * `dReviews` (Comentários e notas de satisfação).
-
-### 🔗 Relacionamentos e Cardinalidade
-As tabelas foram conectadas utilizando relacionamentos **Um-para-Muitos (1:*)** fluindo das dimensões para a fato, garantindo a filtragem correta (propagação de filtro):
-
-1. **`dProducts` (1) ➡️ (*) `fOrderItems`**: Conectado via `product_id`.
-   * *Objetivo:* Analisar receita e volume por categoria de produto.
-2. **`dOrders` (1) ➡️ (*) `fOrderItems`**: Conectado via `order_id`.
-   * *Objetivo:* Trazer datas e status para cada item vendido.
-3. **`dCustomers` (1) ➡️ (*) `dOrders`**: Conectado via `customer_id`.
-   * *Objetivo:* Segmentar pedidos e faturamento por Estado/Cidade do cliente.
-4. **`dOrders` (1) ➡️ (*) `dReviews`**: Conectado via `order_id`.
-   * *Objetivo:* Correlacionar atrasos de entrega (da tabela Orders) com a nota de satisfação (da tabela Reviews).
+* **Tabela Fato (`fOrderItems`):** Dados transacionais (granularidade por item vendido).
+* **Dimensões (`dProducts`, `dOrders`, `dCustomers`, `dReviews`):** Tabelas que fornecem o contexto descritivo e enriquecido via IA.
 
 **Diagrama de Entidade-Relacionamento (DER):**
 ![Modelagem Star Schema](assets/item6_modelagem.png)
+
 ---
 
 ## 📊 Item 7 & Bônus 3: Análise de Dados (Power BI)
 
-Optei por utilizar o **Power BI** (ferramenta externa) para entregar uma análise visual avançada e interativa, conforme sugerido no **Bônus 3** do case.
+Optei pelo **Power BI** para entregar uma análise visual avançada e interativa, conforme sugerido no **Bônus 3** do case.
 
 **Link para o Arquivo:** [Dashboard Power BI (.pbix)](./dashboard_analise_olist.pbix)
 
@@ -110,7 +96,7 @@ Optei por utilizar o **Power BI** (ferramenta externa) para entregar uma anális
 1. **KPIs Executivos:** Receita Total, Ticket Médio e Volumetria.
 2. **Análise Geoespacial:** Mapa de calor de vendas por Estado (Bônus 2).
 3. **Série Temporal:** Evolução de vendas por mês/ano.
-4. **Análise de Qualidade:** Distribuição das notas de satisfação (Enriquecida com os dados de Reviews).
+4. **Análise de Qualidade:** Distribuição das notas de satisfação enriquecida via NLP.
 
 **Preview do Dashboard:**
 ![Dashboard Final Power BI](assets/item7_dashboard.png)
@@ -119,42 +105,21 @@ Optei por utilizar o **Power BI** (ferramenta externa) para entregar uma anális
 
 ## 🌊 Item 8: Pipeline de Dados (Orquestração)
 
-Para garantir a atualização contínua e a governança dos dados, desenhei um pipeline de ingestão na Dadosfera que automatiza a coleta dos arquivos brutos (Raw Data) para a camada de processamento.
+Desenhei um pipeline de ingestão na Dadosfera que automatiza a coleta dos arquivos brutos do **Amazon S3** para a camada de processamento.
 
 **Fluxo Desenhado:**
-1. **Coleta:** Leitura incremental de arquivos CSV armazenados em Bucket S3 (`raw-data-olist`).
+1. **Coleta:** Leitura incremental de arquivos CSV em Bucket S3.
 2. **Ingestão:** Carga para a Landing Zone da Dadosfera.
-3. **Catalogação:** Registro automático de metadados técnicos.
-4. **Agendamento:** Execução diária automatizada.
-
-**Evidência do Pipeline Catalogado:**
-![Pipeline Dadosfera](assets/item8_pipeline.png)
+3. **Agendamento:** Execução diária automatizada para garantir a governança.
 
 ---
 
 ## 📱 Item 9: Data App (Streamlit)
 
-Desenvolvi uma aplicação interativa utilizando o framework **Streamlit** (Python) para democratizar o acesso aos dados de satisfação. O app permite que gestores filtrem reviews por região e acompanhem KPIs financeiros e de logística em tempo real.
-
-**Funcionalidades:**
-* Filtros Dinâmicos de Região.
-* Formatação monetária padrão BRL (R$).
-* Comparativo de Metas (vs Mês Anterior).
-* Visualização Dark Mode para alto contraste.
+Desenvolvi uma aplicação interativa via **Streamlit** (Python) para democratizar o acesso aos dados de satisfação. O app permite que gestores filtrem reviews por região e acompanhem KPIs financeiros em tempo real.
 
 **Preview do App:**
 ![Data App Streamlit](assets/item9_data_app.png)
-
-### 🛠️ Como Executar este Data App
-Conforme as diretrizes do case, o desenvolvimento foi realizado utilizando o **Google Colab**. Para reproduzir o ambiente ou executar localmente:
-
-1. **Pré-requisitos:** Python 3.9+, Streamlit, Pandas e Plotly.
-2. **Instalação:** `pip install streamlit pandas plotly`
-3. **Execução:** Navegue até a pasta do projeto e execute no terminal:
-    ```bash
-    streamlit run app.py
-    ```
-4. **Acesso Remoto (Cloud):** Durante o desenvolvimento, utilizei túnel via **Ngrok** para expor a aplicação rodando no Colab diretamente para a web, simulando um deploy em cloud.
 
 ---
 
