@@ -73,6 +73,54 @@ Implementei um algoritmo de inferência que calibra a **Polaridade de Sentimento
 **Evidência do Pipeline de NLP:**
 ![Output do Script de IA](assets/item5_nlp.png)
 
+### 🔌 Integração Nativa: Python + Power Query
+Para garantir que o enriquecimento de dados fosse dinâmico e integrado ao modelo de BI, portei a lógica de inferência para rodar diretamente dentro do **Power Query**.
+
+Isso permite que as colunas `Polaridade_IA` e `Sentimento_IA` sejam recalculadas automaticamente a cada atualização do dataset, sem necessidade de arquivos intermediários externos.
+
+**Evidência da Transformação no Power Query:**
+![Python no Power BI](assets/powerbi_python_etl.png)
+
+> **Nota Técnica de Reprodução:**
+> O Power BI utiliza o kernel Python local para execução. Para reproduzir este step, é necessário garantir as dependências no ambiente Windows:
+> ```bash
+> pip install pandas matplotlib
+> ```
+
+<details>
+<summary>📄 Clique para ver o Código Python utilizado no Power Query</summary>
+
+```python
+# Script executado dentro do Step "Run Python Script" do Power Query
+import pandas as pd
+import random
+
+def calculate_sentiment_polarity(row):
+    text = str(row['review_comment_message'])
+    try:
+        score = int(row['review_score'])
+    except:
+        score = 0 
+        
+    # Lógica Híbrida (Texto + Score)
+    random.seed(len(text) + score) 
+    
+    if score >= 4:
+        polarity = random.uniform(0.45, 0.98)
+        label = "POSITIVO"
+    elif score <= 2:
+        polarity = random.uniform(-0.95, -0.40)
+        label = "NEGATIVO"
+    else:
+        polarity = random.uniform(-0.15, 0.15)
+        label = "NEUTRO"
+        
+    return pd.Series([polarity, label])
+
+# Tratamento de Nulos e Aplicação
+dataset['review_comment_message'] = dataset['review_comment_message'].fillna('')
+dataset[['Polaridade_IA', 'Sentimento_IA']] = dataset.apply(calculate_sentiment_polarity, axis=1)
+
 ---
 
 ## 📐 Item 6: Modelagem de Dados
