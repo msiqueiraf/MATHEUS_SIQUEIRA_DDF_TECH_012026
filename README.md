@@ -46,31 +46,34 @@ Realizei a ingestão dos arquivos CSV brutos para a camada de **Coleta** da Dado
 
 ## 🕵️ Item 4: Data Quality (Observabilidade)
 
-Implementei um pipeline de auditoria automatizada fundamentado em **Data Contracts** e observabilidade de dados. Utilizei uma lógica de validação inspirada nos princípios do framework *Great Expectations* para garantir que apenas dados íntegros alimentem a camada de modelagem.
-
-Toda a inteligência de auditoria e monitoramento de saúde da base está centralizada no arquivo **`data_quality.py`** localizado na raiz deste repositório.
+Implementei um pipeline de auditoria automatizada fundamentado em **Data Contracts** e observabilidade de dados. Utilizei uma lógica de validação inspirada nos princípios do framework *Great Expectations* para garantir que apenas dados íntegros e confiáveis avancem para a camada de modelagem. Todo o motor de auditoria e monitoramento está centralizado no arquivo **`data_quality.py`** na raiz do repositório.
 
 **Regras de Auditoria Aplicadas:**
 * **Consistência de Domínio:** Validação estatística rigorosa para garantir que a coluna `review_score` esteja dentro do intervalo esperado de **1 a 5**.
-* **Integridade Referencial:** Check de completude na **Chave Primária** `review_id` (Zero Nulls), assegurando a rastreabilidade total dos registros.
-* **Health Check & Monitoring:** Geração automática de métricas descritivas (Mínimo, Máximo e Média) para detecção precoce de anomalias.
+* **Integridade Referencial:** Check de completude na **Chave Primária** `review_id` (Zero Nulls), assegurando a unicidade e rastreabilidade total dos registros.
+* **Health Check & Monitoring:** Geração automática de métricas descritivas (Mínimo, Máximo e Média) para monitoramento de saúde da base e detecção precoce de anomalias.
 
 ---
 
 ## 🤖 Item 5: Enriquecimento com IA (Advanced NLP no Power BI)
 
-Este item representa o diferencial técnico do case. Implementei um motor de **Processamento de Linguagem Natural (NLP)** utilizando a biblioteca **spaCy** (modelo `pt_core_news_sm`) integrado diretamente ao **Power Query** através de um script Python.
+Este item representa o diferencial técnico do case. Para processar o volume de textos desestruturados (`review_comment_message`), desenvolvi um motor de **Processamento de Linguagem Natural (NLP)** robusto utilizando a biblioteca **spaCy** com o modelo pré-treinado `pt_core_news_sm`.
 
 **Diferencial Técnico: Motor de Inferência Híbrida**
-Para superar as limitações de modelos de prateleira que sofrem com "falsos neutros", desenvolvi um algoritmo de **Calibração de Ground Truth**. Ele correlaciona a semântica extraída via IA com a nota real deixada pelo cliente, ajustando a polaridade final para refletir a experiência real do usuário.
+Diferente de abordagens básicas que sofrem com o "viés do neutro" (onde comentários claros são classificados como zero), implementei uma **Calibração de Ground Truth**. O algoritmo correlaciona a semântica extraída via IA com a nota real deixada pelo cliente, calibrando a polaridade final para refletir a experiência real do usuário.
 
-* **Processamento Semântico:** Uso de *Tokenization* e *Lemmatization* em português brasileiro para identificar a raiz do sentimento.
-* **Integração Dinâmica:** A lógica do script **`data_quality.py`** foi portada para o Power BI, permitindo que a inteligência de dados seja re-executada a cada atualização do dataset.
-* **Métricas Geradas:** Colunas de `Polaridade_IA` e `Sentimento_IA` (com classificação alinhada visualmente).
+**Integração e Performance via Power Query:**
+A lógica foi portada para o **Power BI** através de um script Python executado diretamente no **Power Query (Python Step)**. Para garantir a escalabilidade em um dataset de 100k+ registros, o script utiliza processamento em lote (Batch Processing) e desabilita componentes pesados do modelo (NER/Parser) que não são essenciais para análise de sentimento, otimizando o tempo de carga.
 
-**Evidência da Integração (Python no Power Query):**
-![Placeholder: Print do Power Query executando o script Python](assets/powerquery_python_integration.png)
+* **Processamento Semântico:** Uso de *Tokenization* e *Lemmatization* em português brasileiro para identificar a raiz semântica do sentimento.
+* **Métricas de Saída:** Geração das colunas `Polaridade_IA` (escala contínua de -1.0 a +1.0) e `Sentimento_IA` (classificação categórica com alinhamento visual para logs).
+* **Portabilidade:** Toda a inteligência está encapsulada no script **`data_quality.py`**, permitindo tanto a execução via terminal para auditoria quanto a integração nativa no dashboard.
 
+**Evidência da Integração (Python no Power BI):**
+![Integração Power Query e Python](assets/powerquery_python_integration.png)
+
+**Evidência do Enriquecimento (Log de Execução):**
+![Pipeline de NLP Alinhado](assets/item5_nlp_log.png)
 ---
 
 ## 📐 Item 6: Modelagem de Dados
