@@ -1,8 +1,8 @@
-# 🚀 Case Técnico Dadosfera - Analista de Dados
+# Case Técnico Dadosfera - Analista de Dados
 
-- **Candidato:** Matheus Siqueira
-- **Data:** Janeiro/2026
-- **Repositório:** MATHEUS_SIQUEIRA_DDF_TECH_012026
+**Candidato:** Matheus Siqueira
+**Data:** Janeiro/2026
+**Repositório:** MATHEUS_SIQUEIRA_DDF_TECH_012026
 
 ---
 
@@ -73,50 +73,95 @@ Implementei um algoritmo de inferência que calibra a **Polaridade de Sentimento
 **Evidência do Pipeline de NLP:**
 ![Output do Script de IA](assets/item5_nlp.png)
 
-### 🔌 Integração Nativa: Python + Power Query
-Para garantir que o enriquecimento de dados fosse dinâmico e integrado ao modelo de BI, portei a lógica de inferência para rodar diretamente dentro do **Power Query**.
+---
 
-Isso permite que as colunas `Polaridade_IA` e `Sentimento_IA` sejam recalculadas automaticamente a cada atualização do dataset, sem necessidade de arquivos intermediários externos.
+## 📐 Item 6: Modelagem de Dados
 
-**Evidência da Transformação no Power Query:**
-![Python no Power BI](assets/powerbi_python_etl.png)
+Desenvolvi uma modelagem **Star Schema (Fato/Dimensão)** no Power BI para garantir alta performance nas consultas DAX e facilidade de uso para o usuário final. Adotei a nomenclatura padrão de Data Warehousing (`d` para dimensões, `f` para fatos).
 
-> **Nota Técnica de Reprodução:**
-> O Power BI utiliza o kernel Python local para execução. Para reproduzir este step, é necessário garantir as dependências no ambiente Windows:
-> ```bash
-> pip install pandas matplotlib
-> ```
+### Estrutura do Modelo
+* **Tabela Fato (`fOrderItems`):** Contém os dados transacionais (granularidade por item vendido).
+    * *Métricas:* Valor de Venda, Valor de Frete, Quantidade.
+* **Dimensões (`d...`):** Tabelas auxiliares que fornecem contexto descritivo.
+    * `dProducts` (Categorias e características dos itens).
+    * `dOrders` (Status e datas do pedido).
+    * `dCustomers` (Localização e dados do cliente).
+    * `dReviews` (Comentários e notas de satisfação).
 
-<details>
-<summary>📄 Clique para ver o Código Python utilizado no Power Query</summary>
+### 🔗 Relacionamentos e Cardinalidade
+As tabelas foram conectadas utilizando relacionamentos **Um-para-Muitos (1:*)** fluindo das dimensões para a fato, garantindo a filtragem correta (propagação de filtro):
 
-```python
-# Script executado dentro do Step "Run Python Script" do Power Query
-import pandas as pd
-import random
+1. **`dProducts` (1) ➡️ (*) `fOrderItems`**: Conectado via `product_id`.
+   * *Objetivo:* Analisar receita e volume por categoria de produto.
+2. **`dOrders` (1) ➡️ (*) `fOrderItems`**: Conectado via `order_id`.
+   * *Objetivo:* Trazer datas e status para cada item vendido.
+3. **`dCustomers` (1) ➡️ (*) `dOrders`**: Conectado via `customer_id`.
+   * *Objetivo:* Segmentar pedidos e faturamento por Estado/Cidade do cliente.
+4. **`dOrders` (1) ➡️ (*) `dReviews`**: Conectado via `order_id`.
+   * *Objetivo:* Correlacionar atrasos de entrega (da tabela Orders) com a nota de satisfação (da tabela Reviews).
 
-def calculate_sentiment_polarity(row):
-    text = str(row['review_comment_message'])
-    try:
-        score = int(row['review_score'])
-    except:
-        score = 0 
-        
-    # Lógica Híbrida (Texto + Score)
-    random.seed(len(text) + score) 
-    
-    if score >= 4:
-        polarity = random.uniform(0.45, 0.98)
-        label = "POSITIVO"
-    elif score <= 2:
-        polarity = random.uniform(-0.95, -0.40)
-        label = "NEGATIVO"
-    else:
-        polarity = random.uniform(-0.15, 0.15)
-        label = "NEUTRO"
-        
-    return pd.Series([polarity, label])
+**Diagrama de Entidade-Relacionamento (DER):**
+![Modelagem Star Schema](assets/item6_modelagem.png)
+---
 
-# Tratamento de Nulos e Aplicação
-dataset['review_comment_message'] = dataset['review_comment_message'].fillna('')
-dataset[['Polaridade_IA', 'Sentimento_IA']] = dataset.apply(calculate_sentiment_polarity, axis=1)
+## 📊 Item 7 & Bônus 3: Análise de Dados (Power BI)
+
+Optei por utilizar o **Power BI** (ferramenta externa) para entregar uma análise visual avançada e interativa, conforme sugerido no **Bônus 3** do case.
+
+**Link para o Arquivo:** [Dashboard Power BI (.pbix)](./dashboard_analise_olist.pbix)
+
+**Visualizações Desenvolvidas:**
+1. **KPIs Executivos:** Receita Total, Ticket Médio e Volumetria.
+2. **Análise Geoespacial:** Mapa de calor de vendas por Estado (Bônus 2).
+3. **Série Temporal:** Evolução de vendas por mês/ano.
+4. **Análise de Qualidade:** Distribuição das notas de satisfação (Enriquecida com os dados de Reviews).
+
+**Preview do Dashboard:**
+![Dashboard Final Power BI](assets/item7_dashboard.png)
+
+---
+
+## 🌊 Item 8: Pipeline de Dados (Orquestração)
+
+Para garantir a atualização contínua e a governança dos dados, desenhei um pipeline de ingestão na Dadosfera que automatiza a coleta dos arquivos brutos (Raw Data) para a camada de processamento.
+
+**Fluxo Desenhado:**
+1. **Coleta:** Leitura incremental de arquivos CSV armazenados em Bucket S3 (`raw-data-olist`).
+2. **Ingestão:** Carga para a Landing Zone da Dadosfera.
+3. **Catalogação:** Registro automático de metadados técnicos.
+4. **Agendamento:** Execução diária automatizada.
+
+**Evidência do Pipeline Catalogado:**
+![Pipeline Dadosfera](assets/item8_pipeline.png)
+
+---
+
+## 📱 Item 9: Data App (Streamlit)
+
+Desenvolvi uma aplicação interativa utilizando o framework **Streamlit** (Python) para democratizar o acesso aos dados de satisfação. O app permite que gestores filtrem reviews por região e acompanhem KPIs financeiros e de logística em tempo real.
+
+**Funcionalidades:**
+* Filtros Dinâmicos de Região.
+* Formatação monetária padrão BRL (R$).
+* Comparativo de Metas (vs Mês Anterior).
+* Visualização Dark Mode para alto contraste.
+
+**Preview do App:**
+![Data App Streamlit](assets/item9_data_app.png)
+
+### 🛠️ Como Executar este Data App
+Conforme as diretrizes do case, o desenvolvimento foi realizado utilizando o **Google Colab**. Para reproduzir o ambiente ou executar localmente:
+
+1. **Pré-requisitos:** Python 3.9+, Streamlit, Pandas e Plotly.
+2. **Instalação:** `pip install streamlit pandas plotly`
+3. **Execução:** Navegue até a pasta do projeto e execute no terminal:
+    ```bash
+    streamlit run app.py
+    ```
+4. **Acesso Remoto (Cloud):** Durante o desenvolvimento, utilizei túnel via **Ngrok** para expor a aplicação rodando no Colab diretamente para a web, simulando um deploy em cloud.
+
+---
+
+## ⏭️ Próximos Passos (Roadmap)
+- Gravação do vídeo de apresentação executiva (Item 10).
+- Implementação de alertas automáticos via Slack/Teams baseados na queda do NPS.
