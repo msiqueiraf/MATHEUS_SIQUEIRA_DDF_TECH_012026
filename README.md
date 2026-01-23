@@ -44,34 +44,30 @@ Realizei a ingestão dos arquivos CSV brutos para a camada de **Coleta** da Dado
 
 ---
 
-## 🕵️ Item 4: Data Quality
+## 🕵️ Item 4: Data Quality (Observabilidade)
 
-Desenvolvi um pipeline de auditoria automatizada em Python que valida a integridade dos dados seguindo os princípios e regras do framework **Great Expectations**.
+Implementei um pipeline de auditoria automatizada fundamentado em **Data Contracts** e observabilidade de dados. Utilizei uma lógica de validação inspirada no framework *Great Expectations* para garantir que apenas dados íntegros e confiáveis avancem para a camada de modelagem. Todo o motor de auditoria e monitoramento está centralizado no arquivo **`data_quality.py`** na raiz do repositório.
 
 **Regras de Auditoria Aplicadas:**
-1. **Consistência de Domínio:** Validação estatística para garantir que a coluna `review_score` contenha apenas valores entre 1 e 5 (Regra de Negócio).
-2. **Integridade Referencial:** Verificação de nulidade na chave primária `review_id` para assegurar rastreabilidade única dos pedidos.
-3. **Completo:** Geração de estatísticas descritivas (Mínimo, Máximo e Média) para monitoramento de saúde da base.
-
-**Evidência do Relatório de Qualidade:**
-![Relatório de Data Quality](assets/item4_data_quality.png)
+* **Consistência de Domínio:** Validação estatística rigorosa para garantir que a coluna `review_score` esteja dentro do intervalo esperado de **1 a 5**.
+* **Integridade Referencial:** Check de completude na **Chave Primária** `review_id` (Zero Nulls), assegurando a unicidade e rastreabilidade total dos registros.
+* **Health Check & Monitoring:** Geração automática de métricas descritivas (Mínimo, Máximo e Média) para monitoramento de saúde da base e detecção precoce de anomalias.
 
 ---
 
-## 🤖 Item 5: Enriquecimento de Dados com IA (NLP)
+## 🤖 Item 5: Enriquecimento com IA (NLP Avançado)
 
-O dataset original possuía milhares de comentários em texto livre (`review_comment_message`). Para estruturar esses dados, desenvolvi um pipeline de **Feature Engineering** com foco em Análise de Sentimento.
+Para processar o volume de textos desestruturados (`review_comment_message`), desenvolvi um motor de **Processamento de Linguagem Natural (NLP)** robusto utilizando a biblioteca **spaCy** com o modelo pré-treinado `pt_core_news_sm`.
 
-**Solução Aplicada (Motor Híbrido):**
-Implementei um algoritmo de inferência que calibra a **Polaridade de Sentimento** correlacionando o texto com o *Ground Truth* (Nota do Cliente). Isso garante precisão semântica para o idioma Português (PT-BR), superando limitações de modelos treinados apenas em inglês.
+**Diferencial Técnico: Motor de Inferência Híbrida**
+Diferente de abordagens básicas que sofrem com o "viés do neutro" (onde comentários claros são classificados como zero), implementei uma **Calibração de Ground Truth**. O algoritmo correlaciona a semântica extraída via IA com a nota real deixada pelo cliente, calibrando a polaridade final para refletir a experiência real do usuário.
 
-* **Entrada (Input):** Texto bruto do cliente.
-* **Processamento:** Cálculo de polaridade matemática calibrada pelo score da avaliação.
-* **Saída (Output):** Métricas de `Polaridade` (-1.0 a +1.0) e Classificação (`Positivo` 🟢 / `Neutro` 🟡 / `Negativo` 🔴).
-* **Impacto:** Permitiu a criação de visuais avançados no Dashboard baseados na intensidade do sentimento do cliente.
+* **Processamento Semântico:** Uso de *Tokenization* e *Lemmatization* em português brasileiro para identificar a raiz semântica do sentimento.
+* **Métricas de Saída:** Geração das colunas `Polaridade_IA` (escala contínua de -1.0 a +1.0) e `Sentimento_IA` (classificação categórica com alinhamento visual para logs).
+* **Implementação e Portabilidade:** A lógica está encapsulada no script **`data_quality.py`**. O código foi portado para o **Power Query** (Python Step), permitindo o enriquecimento dinâmico do modelo de dados diretamente no Power BI.
 
-**Evidência do Pipeline de NLP:**
-![Output do Script de IA](assets/item5_nlp.png)
+**Evidência do Enriquecimento (Log de Execução):**
+![Pipeline de NLP Alinhado](assets/item5_nlp_log.png)
 
 ---
 
