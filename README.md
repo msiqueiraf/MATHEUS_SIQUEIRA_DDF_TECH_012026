@@ -1,7 +1,7 @@
 # 🚀 Case Técnico Dadosfera - Analista de Dados
 
-**Candidato:** Matheus Siqueira  
-**Data:** Janeiro/2026  
+**Candidato:** Matheus Siqueira
+**Data:** Janeiro/2026
 **Repositório:** MATHEUS_SIQUEIRA_DDF_TECH_012026
 
 ---
@@ -45,8 +45,7 @@ Para simular um cenário real de **E-commerce Brasileiro** com alta complexidade
 Realizei a ingestão dos arquivos CSV brutos para a camada de **Coleta** da Dadosfera. Os dados foram catalogados com descrições funcionais para facilitar o self-service analytics.
 
 **Evidência da Carga e Catalogação na Plataforma:**
-*(Insira aqui o print da tela "Coletar" com os arquivos listados)*
-![Print da Dadosfera - Ingestão](nome_do_seu_print_dadosfera.png)
+![Print da Dadosfera - Ingestão](assets/coleta_dadosfera.png)
 
 ---
 
@@ -59,8 +58,7 @@ Utilizei **Python** para rodar um script de validação de dados, simulando as r
 2.  **Integridade de Chaves:** Garantir que não existam `review_id` nulos.
 
 **Evidência do Relatório de Qualidade:**
-*(Insira aqui o print do Colab com os "Checks" verdes)*
-![Relatório de Data Quality](nome_do_seu_print_quality.png)
+![Relatório de Data Quality](assets/data_quality_py.png)
 
 ---
 
@@ -71,10 +69,11 @@ Para transformar dados desestruturados (texto livre dos reviews) em dados estrut
 * **Input:** Texto do comentário (`review_comment_message`).
 * **Processamento:** Análise de sentimento e correlação com a nota.
 * **Output:** Nova feature `Sentimento` (Positivo, Negativo, Neutro) e Log de Contexto.
+* **Amostragem:** O processamento considerou uma amostra estatística de 1.000 registros, exibindo os detalhes dos 3 primeiros casos.
 
 **Evidência do Processamento com IA:**
-*(Insira aqui o print do Colab mostrando a classificação dos 10 reviews)*
-![Output do Script de IA](nome_do_seu_print_ia.png)
+*(Output consolidado no script Python acima)*
+![Output do Script de IA](assets/data_quality_py.png)
 
 ---
 
@@ -87,8 +86,7 @@ Desenvolvi uma modelagem **Star Schema (Fato/Dimensão)** para otimizar a perfor
 * **Relacionamento:** Esquema `1 para *` (One-to-Many) fluindo das dimensões para a fato.
 
 **Diagrama de Entidade-Relacionamento (DER):**
-*(Insira aqui o print do diagrama do Power BI que arrumamos)*
-![Modelagem Star Schema](nome_do_seu_print_modelagem.png)
+![Modelagem Star Schema](assets/modelagem_pbi.png)
 
 ---
 
@@ -96,7 +94,7 @@ Desenvolvi uma modelagem **Star Schema (Fato/Dimensão)** para otimizar a perfor
 
 Optei por utilizar o **Power BI** (ferramenta externa) para entregar uma análise visual avançada e interativa, conforme sugerido no **Bônus 3**.
 
-**Link para o Arquivo:** [Dashboard Power BI (.pbix)](./nome_do_arquivo.pbix)
+**Link para o Arquivo:** [Dashboard Power BI (.pbix)](./dashboard_analise_olist.pbix)
 
 **Visualizações Desenvolvidas:**
 1.  **KPIs Executivos:** Receita Total, Ticket Médio e Volumetria.
@@ -105,8 +103,7 @@ Optei por utilizar o **Power BI** (ferramenta externa) para entregar uma anális
 4.  **Análise de Qualidade:** Distribuição das notas de satisfação dos clientes.
 
 **Preview do Dashboard:**
-*(Insira aqui o print final do Dashboard que vamos tirar agora)*
-![Dashboard Final Power BI](nome_do_seu_print_dashboard.png)
+![Dashboard Final Power BI](assets/dashboard_final.png)
 
 ---
 
