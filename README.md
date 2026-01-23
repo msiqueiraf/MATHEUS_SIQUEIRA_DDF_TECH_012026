@@ -1,4 +1,4 @@
-# Case Técnico Dadosfera - Analista de Dados
+# 🚀 Case Técnico Dadosfera - Analista de Dados
 
 **Candidato:** Matheus Siqueira
 **Data:** Janeiro/2026
@@ -8,26 +8,21 @@
 
 ## 📋 Item 0: Agilidade e Planejamento
 
-Utilizei uma abordagem Ágil (Kanban) para organizar as entregas deste case, focando primeiro na infraestrutura de dados e posteriormente na camada de inteligência e visualização.
+Utilizei uma abordagem Ágil (Kanban) para organizar as entregas deste case, priorizando a infraestrutura de dados (Bronze/Silver) antes da camada de inteligência e visualização (Gold).
 
-### 📅 Kanban Board do Projeto
-
-#### 📝 Backlog (A Fazer)
-- [ ] **Item 8:** Configurar Pipeline de Transformação (ETL) na Dadosfera
-- [ ] **Item 9:** Desenvolver Data App em Streamlit
-- [ ] **Item 10:** Gravação do Vídeo de Apresentação
-
-#### 🚧 Doing (Em Andamento)
-- [x] **Item 7:** Construção do Dashboard Analítico (Power BI)
+### 📅 Status do Projeto
 
 #### ✅ Done (Concluído)
-- [x] **Item 0:** Planejamento e Definição de Arquitetura
+- [x] **Item 0:** Planejamento e Arquitetura
 - [x] **Item 1:** Seleção do Dataset (Brazilian E-Commerce Olist)
 - [x] **Item 2:** Ingestão de Dados na Plataforma Dadosfera
 - [x] **Item 3:** Catalogação e Dicionário de Dados
 - [x] **Item 4:** Validação de Qualidade de Dados (Great Expectations)
 - [x] **Item 5:** Enriquecimento com IA (Feature Engineering / NLP)
 - [x] **Item 6:** Modelagem Dimensional (Star Schema)
+- [x] **Item 7:** Dashboard Analítico (Power BI)
+- [x] **Item 8:** Orquestração de Pipelines (ETL)
+- [x] **Item 9:** Data App Interativo (Streamlit)
 
 ---
 
@@ -36,13 +31,13 @@ Utilizei uma abordagem Ágil (Kanban) para organizar as entregas deste case, foc
 Para simular um cenário real de **E-commerce Brasileiro** com alta complexidade e volume (>100k registros), selecionei o **Brazilian E-Commerce Public Dataset by Olist**.
 
 * **Motivo da Escolha:** O dataset oferece dados relacionais ricos (pedidos, clientes, produtos, geolocalização) e dados desestruturados (reviews em texto), permitindo explorar todo o ciclo de vida dos dados exigido no case.
-* **Volume:** A tabela principal `order_items` possui mais de 112.000 registros.
+* **Volume:** A tabela principal `order_items` possui mais de 112.000 registros, atendendo ao requisito mínimo do case.
 
 ---
 
 ## 🔌 Item 2 & 3: Integração e Exploração (Dadosfera)
 
-Realizei a ingestão dos arquivos CSV brutos para a camada de **Coleta** da Dadosfera. Os dados foram catalogados com descrições funcionais para facilitar o self-service analytics por usuários de negócio.
+Realizei a ingestão dos arquivos CSV brutos para a camada de **Coleta** da Dadosfera. Os dados foram catalogados com descrições funcionais e técnicas para facilitar o self-service analytics por usuários de negócio.
 
 **Evidência da Carga e Catalogação na Plataforma:**
 ![Print da Dadosfera - Ingestão](assets/item23_coleta_dadosfera.png)
@@ -53,9 +48,10 @@ Realizei a ingestão dos arquivos CSV brutos para a camada de **Coleta** da Dado
 
 Utilizei a biblioteca **Great Expectations** (versão Python) para implementar testes automatizados de qualidade de dados, gerando um relatório técnico de auditoria antes do consumo dos dados.
 
-**Regras de Auditoria:**
+**Regras de Auditoria Aplicadas:**
 1.  **Consistência de Domínio:** `expect_column_values_to_be_between(1, 5)` na coluna `review_score` para garantir que as notas sigam a regra de negócio.
 2.  **Integridade Referencial:** `expect_column_values_to_not_be_null` na coluna `review_id` para assegurar unicidade e rastreabilidade.
+3.  **Completo:** Validação estatística de Mínimo, Máximo e Média global.
 
 **Evidência do Relatório de Qualidade:**
 ![Relatório de Data Quality](assets/item4_data_quality.png)
@@ -69,10 +65,10 @@ O dataset original possuía milhares de comentários em texto livre (`review_com
 **Solução Aplicada:**
 Desenvolvi um pipeline de **Feature Engineering** utilizando **Processamento de Linguagem Natural (NLP)** para transformar texto em dados estruturados.
 
-* **Entrada (Input):** Texto bruto do cliente.
+* **Entrada (Input):** Texto bruto do cliente (Ex: "Produto excelente, entrega rápida").
 * **Processamento:** Algoritmo de classificação de sentimento (Polaridade e Regras de Negócio).
 * **Saída (Output):** Nova dimensão `Sentimento` (Positivo 🟢 / Neutro 🟡 / Negativo 🔴).
-* **Volume Processado:** Amostra estatística de 1.000 registros auditados.
+* **Impacto:** Permitiu a criação de KPIs de satisfação baseados em texto, não apenas na nota numérica.
 
 **Evidência do Pipeline de NLP:**
 ![Output do Script de IA](assets/item5_nlp.png)
@@ -109,6 +105,47 @@ Optei por utilizar o **Power BI** (ferramenta externa) para entregar uma anális
 
 ---
 
+## 🌊 Item 8: Pipeline de Dados (Orquestração)
+
+Para garantir a atualização contínua e a governança dos dados, desenhei um pipeline de ingestão na Dadosfera que automatiza a coleta dos arquivos brutos (Raw Data) para a camada de processamento.
+
+**Fluxo Desenhado:**
+1.  **Coleta:** Leitura incremental de arquivos CSV armazenados em Bucket S3 (`raw-data-olist`).
+2.  **Ingestão:** Carga para a Landing Zone da Dadosfera.
+3.  **Catalogação:** Registro automático de metadados técnicos.
+4.  **Agendamento:** Execução diária automatizada.
+
+**Evidência do Pipeline Catalogado:**
+![Pipeline Dadosfera](assets/item8_pipeline.png)
+
+---
+
+## 📱 Item 9: Data App (Streamlit)
+
+Desenvolvi uma aplicação interativa utilizando o framework **Streamlit** (Python) para democratizar o acesso aos dados de satisfação. O app permite que gestores filtrem reviews por região e acompanhem KPIs financeiros e de logística em tempo real.
+
+**Funcionalidades:**
+* Filtros Dinâmicos de Região.
+* Formatação monetária padrão BRL (R$).
+* Comparativo de Metas (vs Mês Anterior).
+* Visualização Dark Mode para alto contraste.
+
+**Preview do App:**
+![Data App Streamlit](assets/item9_data_app.png)
+
+### 🛠️ Como Executar este Data App
+Conforme as diretrizes do case, o desenvolvimento foi realizado utilizando o **Google Colab**. Para reproduzir o ambiente ou executar localmente:
+
+1.  **Pré-requisitos:** Python 3.9+, Streamlit, Pandas e Plotly.
+2.  **Instalação:** `pip install streamlit pandas plotly`
+3.  **Execução:** Navegue até a pasta do projeto e execute no terminal:
+    ```bash
+    streamlit run app.py
+    ```
+4.  **Acesso Remoto (Cloud):** Durante o desenvolvimento, utilizei túnel via **Ngrok** para expor a aplicação rodando no Colab diretamente para a web, simulando um deploy em cloud.
+
+---
+
 ## ⏭️ Próximos Passos (Roadmap)
-- Finalização do Data App em Streamlit.
-- Gravação do vídeo explicativo (Item 10).
+- Gravação do vídeo de apresentação executiva (Item 10).
+- Implementação de alertas automáticos via Slack/Teams baseados na queda do NPS.
