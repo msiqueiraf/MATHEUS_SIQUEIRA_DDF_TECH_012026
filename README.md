@@ -1,8 +1,8 @@
 # Case Técnico Dadosfera - Analista de Dados
 
-**Candidato:** Matheus Siqueira  
-**Data:** Janeiro/2026  
-**Repositório:** MATHEUS_SIQUEIRA_DDF_TECH_012026  
+**Candidato:** Matheus Siqueira  
+**Data:** Janeiro/2026  
+**Repositório:** MATHEUS_SIQUEIRA_DDF_TECH_012026  
 
 ---
 
@@ -39,6 +39,8 @@ Para simular um cenário real de **E-commerce Brasileiro** com alta complexidade
 
 Realizei a ingestão dos arquivos CSV brutos para a camada de **Coleta** da Dadosfera. Os dados foram catalogados com descrições funcionais e técnicas para facilitar o self-service analytics por usuários de negócio.
 
+> 📘 **Documentação Técnica:** Para detalhes aprofundados sobre a linhagem, tipagem e regras de negócio aplicadas em cada tabela (Silver/Gold), consulte o **[Dicionário de Dados Técnico](./DATA_DICTIONARY.md)**.
+
 **Evidência da Carga e Catalogação na Plataforma:**
 ![Print da Dadosfera - Ingestão](assets/item23_coleta_dadosfera.png)
 
@@ -68,9 +70,8 @@ Implementei uma **Calibração de Ground Truth**, onde o algoritmo correlaciona 
 **Integração e Portabilidade:**
 A lógica está encapsulada no script **`power_query_nlp.py`**. O código foi portado para o ambiente do **Power Query (Python Step)**, permitindo o enriquecimento dinâmico do modelo de dados diretamente no Power BI a cada refresh.
 
-* **Processamento Semântico:** Uso de *Tokenization* e *Lemmatization* em português brasileiro.
+* **Otimização Upstream:** Implementei uma filtragem prévia no Power Query para enviar ao script Python apenas as colunas estritamente necessárias (`id`, `score`, `text`), reduzindo o tempo de processamento e serialização de dados.
 * **Métricas de Saída:** Geração das colunas `Polaridade_IA` (-1.0 a +1.0) e `Sentimento_IA` (Positivo 🟢 / Neutro 🟡 / Negativo 🔴).
-* **Impacto:** Permitiu a criação de visuais avançados baseados na intensidade do sentimento do cliente.
 
 **Evidência da Integração no Power BI:**
 ![Script Python no Power Query](assets/powerquery_python_integration.png)
@@ -82,24 +83,25 @@ A lógica está encapsulada no script **`power_query_nlp.py`**. O código foi po
 
 ## 📐 Item 6: Modelagem de Dados
 
-Desenvolvi uma modelagem **Star Schema (Fato/Dimensão)** no Power BI para garantir alta performance nas consultas DAX e facilidade de uso para o usuário final. Adotei a nomenclatura padrão de Data Warehousing (`d` para dimensões, `f` para fatos).
+Desenvolvi uma modelagem **Star Schema (Fato/Dimensão)** no Power BI para garantir alta performance nas consultas DAX e facilidade de uso para o usuário final.
+
+### 🏗️ Engenharia de Dados e Performance (Silver Layer)
+Apliquei conceitos avançados de engenharia na etapa de transformação (Power Query) para garantir escalabilidade e governança:
+
+1.  **Governança (Naming Conventions):** Adotei estritamente o padrão **`snake_case`** (ex: `product_category_name` em vez de `Nome da Categoria`) e removi acentos/caracteres especiais.
+    * *Motivo:* Garantir interoperabilidade imediata caso o modelo seja migrado para Data Lakes (Parquet/Delta) ou Bancos SQL, onde espaços e acentos costumam quebrar pipelines.
+2.  **Vertical Partitioning (Performance):** Realizei a remoção agressiva de colunas de alta cardinalidade não utilizadas (ex: `customer_zip_code`, `product_description`) antes da carga.
+    * *Impacto:* Redução drástica do consumo de memória do motor VertiPaq e aceleração do refresh.
+3.  **Type Safety:** Garantia de tipagem forte, especialmente para dados monetários (`type number` para preservar centavos) e tratamento de locale (`en-US`) nos outputs do Python.
 
 ### Estrutura do Modelo
 * **Tabela Fato (`fOrderItems`):** Contém os dados transacionais (granularidade por item vendido).
-    * *Métricas:* Valor de Venda, Valor de Frete, Quantidade.
+    * *Métricas:* Valor de Venda, Valor de Frete, Quantidade.
 * **Dimensões (`d...`):** Tabelas auxiliares que fornecem contexto descritivo.
-    * `dProducts` (Categorias e características dos itens).
-    * `dOrders` (Status e datas do pedido).
-    * `dCustomers` (Localização e dados do cliente).
-    * `dReviews` (Comentários e notas de satisfação enriquecidas via IA).
-
-### 🔗 Relacionamentos e Cardinalidade
-As tabelas foram conectadas utilizando relacionamentos **Um-para-Muitos (1:*)** fluindo das dimensões para a fato:
-
-1. **`dProducts` (1) ➡️ (*) `fOrderItems`**: Conectado via `product_id`.
-2. **`dOrders` (1) ➡️ (*) `fOrderItems`**: Conectado via `order_id`.
-3. **`dCustomers` (1) ➡️ (*) `dOrders`**: Conectado via `customer_id`.
-4. **`dOrders` (1) ➡️ (*) `dReviews`**: Conectado via `order_id`.
+    * `dProducts` (Categorias higienizadas e padronizadas).
+    * `dOrders` (Status e datas do ciclo de vida do pedido).
+    * `dCustomers` (Localização geográfica por Estado/Cidade).
+    * `dReviews` (Comentários e notas de satisfação enriquecidas via IA).
 
 **Diagrama de Entidade-Relacionamento (DER):**
 ![Modelagem Star Schema](assets/item6_modelagem.png)
