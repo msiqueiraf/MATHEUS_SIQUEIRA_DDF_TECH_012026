@@ -45,6 +45,7 @@ Realizei a ingestão dos arquivos CSV brutos para a camada de **Coleta** da Dado
 > 📘 **Documentação Técnica:** Para detalhes aprofundados sobre a linhagem, tipagem e regras de negócio aplicadas em cada tabela (Silver/Gold), consulte o **[Dicionário de Dados Técnico](./DATA_DICTIONARY.md)**.
 
 **Evidência da Carga e Catalogação na Plataforma:**
+
 ![Print da Dadosfera - Ingestão](assets/item23_coleta_dadosfera.png)
 
 ---
@@ -59,6 +60,7 @@ Implementei um pipeline de auditoria automatizada fundamentado em **Data Contrac
 * **Health Check & Monitoring:** Geração automática de métricas descritivas (Mínimo, Máximo e Média) para monitoramento de saúde da base e detecção precoce de anomalias.
 
 **Evidência do Relatório de Qualidade:**
+
 ![Relatório de Data Quality](assets/item4_data_quality.png)
 
 ---
@@ -77,9 +79,11 @@ A lógica está encapsulada no script **`power_query_nlp.py`**. O código foi po
 * **Métricas de Saída:** Geração das colunas `Polaridade_IA` (-1.0 a +1.0) e `Sentimento_IA` (Positivo 🟢 / Neutro 🟡 / Negativo 🔴).
 
 **Evidência da Integração no Power BI:**
+
 ![Script Python no Power Query](assets/powerquery_python_integration.png)
 
 **Evidência do Pipeline de NLP:**
+
 ![Output do Script de IA](assets/item5_nlp.png)
 
 ---
@@ -107,6 +111,7 @@ Apliquei conceitos avançados de engenharia na etapa de transformação (Power Q
     * `dReviews` (Comentários e notas de satisfação enriquecidas via IA).
 
 **Diagrama de Entidade-Relacionamento (DER):**
+
 ![Modelagem Star Schema](assets/item6_modelagem.png)
 
 ---
@@ -119,6 +124,7 @@ Para cumprir o requisito de análise exploratória e validação de categorias, 
 **Objetivo:** Validar a distribuição de produtos por categoria diretamente na fonte (Silver Layer), assegurando a integridade dos dados antes da modelagem.
 
 **Evidência da Execução (Query + Resultado):**
+
 ![Resultado SQL](assets/item7_sql_query.png)
 
 ### 🚀 Dashboard Executivo (Power BI)
@@ -141,6 +147,7 @@ Integrei os outputs do modelo de NLP diretamente na camada visual:
 * **Monitor de Sentimento:** Um KPI exclusivo que traduz a "Polaridade Matemática" (-1 a 1) para linguagem de negócio ("Positivo", "Atenção", "Negativo"), permitindo que diretores identifiquem crises de reputação em tempo real.
 
 **Preview do Dashboard:**
+
 ![Dashboard Final Power BI](assets/item7_dashboard.png)
 
 ---
@@ -156,6 +163,7 @@ Para garantir a atualização contínua e a governança dos dados, desenhei um p
 4. **Agendamento:** Execução diária automatizada.
 
 **Evidência do Pipeline Catalogado:**
+
 ![Pipeline Dadosfera](assets/item8_pipeline.png)
 
 ---
@@ -171,6 +179,7 @@ Desenvolvi uma aplicação interativa utilizando o framework **Streamlit** (Pyth
 * Visualização Dark Mode para alto contraste.
 
 **Preview do App:**
+
 ![Data App Streamlit](assets/item9_data_app.png)
 
 ### 🛠️ Como Executar este Data App
