@@ -97,9 +97,12 @@ Apliquei conceitos avançados de engenharia na etapa de transformação (Power Q
 
 1.  **Governança (Naming Conventions):** Adotei estritamente o padrão **`snake_case`** (ex: `product_category_name` em vez de `Nome da Categoria`) e removi acentos/caracteres especiais.
     * *Motivo:* Garantir interoperabilidade imediata caso o modelo seja migrado para Data Lakes (Parquet/Delta) ou Bancos SQL, onde espaços e acentos costumam quebrar pipelines.
-2.  **Vertical Partitioning (Performance):** Realizei a remoção agressiva de colunas de alta cardinalidade não utilizadas (ex: `customer_zip_code`, `product_description`) antes da carga.
+2.  **Vertical Partitioning (Performance):** Realizei a remoção agressiva de colunas de alta cardinalidade não utilizadas (ex: `product_description`) antes da carga.
     * *Impacto:* Redução drástica do consumo de memória do motor VertiPaq e aceleração do refresh.
-3.  **Type Safety:** Garantia de tipagem forte, especialmente para dados monetários (`type number` para preservar centavos) e tratamento de locale (`en-US`) nos outputs do Python.
+3.  **Type Safety & Localization:** Implementação de tratamento explícito de locale (`en-US`) na camada M.
+    * *Motivo:* Garantir que preços e coordenadas geográficas vindos de CSVs internacionais (separador decimal ponto) sejam interpretados corretamente, evitando erros de magnitude financeira.
+4.  **Data Enrichment (Bônus 2):** Enriquecimento da dimensão de clientes (`dCustomers`) com coordenadas exatas de **Latitude e Longitude**.
+    * *Técnica:* Realizei o agrupamento (Group By) da base de geolocalização (reduzindo 1MM+ linhas para chaves únicas de CEP) antes de realizar o *Merge*, garantindo performance sem perder precisão geográfica.
 
 ### Estrutura do Modelo
 * **Tabela Fato (`fOrderItems`):** Contém os dados transacionais (granularidade por item vendido).
@@ -133,6 +136,7 @@ Para superar as expectativas de uma análise padrão, desenvolvi um **Dashboard 
 **Link para o Arquivo:** [Dashboard Power BI (.pbix)](./dashboard_analise_olist.pbix)
 
 #### Destaques de Engenharia e Performance
+* **Análise Geoespacial (Bônus 2):** Utilização de dados enriquecidos de Latitude/Longitude para plotagem de mapas de calor precisos, superando a limitação de ambiguidade de nomes de cidades.
 * **Otimização da Dimensão Tempo (`dTime`):** Implementei uma tabela dimensão otimizada com granularidade de **minutos** (1.440 linhas) em vez de segundos (86.400 linhas). Isso reduz a cardinalidade e melhora a performance do motor VertiPaq, mantendo a precisão necessária para análises de pico de horário (ex: "Horário de Almoço").
 * **Controle de Filtragem (DAX Avançado):** Evitei relacionamentos bidirecionais físicos (que impactam performance). Utilizei a função **`CROSSFILTER`** via DAX para propagar filtros complexos (ex: *Categoria do Produto* impactando *SLA do Pedido*) apenas no momento do cálculo.
 
