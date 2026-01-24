@@ -1,8 +1,8 @@
 # Case Técnico Dadosfera - Analista de Dados
 
-**Candidato:** Matheus Siqueira  
-**Data:** Janeiro/2026  
-**Repositório:** MATHEUS_SIQUEIRA_DDF_TECH_012026  
+**Candidato:** Matheus Siqueira  
+**Data:** Janeiro/2026  
+**Repositório:** MATHEUS_SIQUEIRA_DDF_TECH_012026  
 
 ---
 
@@ -86,12 +86,12 @@ Desenvolvi uma modelagem **Star Schema (Fato/Dimensão)** no Power BI para garan
 
 ### Estrutura do Modelo
 * **Tabela Fato (`fOrderItems`):** Contém os dados transacionais (granularidade por item vendido).
-    * *Métricas:* Valor de Venda, Valor de Frete, Quantidade.
+    * *Métricas:* Valor de Venda, Valor de Frete, Quantidade.
 * **Dimensões (`d...`):** Tabelas auxiliares que fornecem contexto descritivo.
-    * `dProducts` (Categorias e características dos itens).
-    * `dOrders` (Status e datas do pedido).
-    * `dCustomers` (Localização e dados do cliente).
-    * `dReviews` (Comentários e notas de satisfação enriquecidas via IA).
+    * `dProducts` (Categorias e características dos itens).
+    * `dOrders` (Status e datas do pedido).
+    * `dCustomers` (Localização e dados do cliente).
+    * `dReviews` (Comentários e notas de satisfação enriquecidas via IA).
 
 ### 🔗 Relacionamentos e Cardinalidade
 As tabelas foram conectadas utilizando relacionamentos **Um-para-Muitos (1:*)** fluindo das dimensões para a fato:
@@ -108,15 +108,23 @@ As tabelas foram conectadas utilizando relacionamentos **Um-para-Muitos (1:*)** 
 
 ## 📊 Item 7 & Bônus 3: Análise de Dados (Power BI)
 
-Optei por utilizar o **Power BI** para entregar uma análise visual avançada e interativa, conforme sugerido no **Bônus 3** do case.
+Para superar as expectativas de uma análise padrão, desenvolvi um **Dashboard Executivo de Alta Performance** no Power BI. O foco foi unir Engenharia de Dados robusta com uma experiência de usuário (UX) moderna e acionável.
 
 **Link para o Arquivo:** [Dashboard Power BI (.pbix)](./dashboard_analise_olist.pbix)
 
-**Visualizações Desenvolvidas:**
-1. **KPIs Executivos:** Receita Total, Ticket Médio e Volumetria.
-2. **Análise Geoespacial:** Mapa de calor de vendas por Estado (Bônus 2).
-3. **Série Temporal:** Evolução de vendas por mês/ano.
-4. **Análise de Qualidade:** Distribuição das notas de satisfação enriquecida com NLP.
+### 🚀 Destaques de Engenharia e Performance
+* **Otimização da Dimensão Tempo (`dTime`):** Implementei uma tabela dimensão otimizada com granularidade de **minutos** (1.440 linhas) em vez de segundos (86.400 linhas). Isso reduz a cardinalidade e melhora a performance do motor VertiPaq, mantendo a precisão necessária para análises de pico de horário (ex: "Horário de Almoço").
+* **Controle de Filtragem (DAX Avançado):** Evitei relacionamentos bidirecionais físicos (que impactam performance). Utilizei a função **`CROSSFILTER`** via DAX para propagar filtros complexos (ex: *Categoria do Produto* impactando *SLA do Pedido*) apenas no momento do cálculo.
+
+### 🎨 UX/UI Avançado (HTML & CSS Dinâmico)
+Em vez dos cartões nativos limitados, desenvolvi um **Header Dinâmico via HTML/SVG** injetado via DAX.
+* **Visual:** Estilo *Glassmorphism* (Efeito de vidro) com sombras e bordas arredondadas via CSS.
+* **KPIs da Tríade de Vendas:** Faturamento (com formatação automática de "Bi/Mi"), Volume de Pedidos e Ticket Médio.
+* **Indicadores de Contexto:** Ícones SVG que mudam de cor e forma automaticamente baseados nos dados (ex: o ícone de Sentimento vira um "Joinha para baixo" vermelho se a aprovação cair, alertando o gestor visualmente).
+
+### 🧠 Inteligência Artificial Acionável
+Integrei os outputs do modelo de NLP diretamente na camada visual:
+* **Monitor de Sentimento:** Um KPI exclusivo que traduz a "Polaridade Matemática" (-1 a 1) para linguagem de negócio ("Positivo", "Atenção", "Negativo"), permitindo que diretores identifiquem crises de reputação em tempo real.
 
 **Preview do Dashboard:**
 ![Dashboard Final Power BI](assets/item7_dashboard.png)
