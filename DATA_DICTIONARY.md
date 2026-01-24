@@ -19,8 +19,8 @@ Tabela transacional central. Filtros de alta cardinalidade foram removidos para 
 | :--- | :--- | :--- | :--- |
 | `order_id` | `text` | Chave única do pedido. | FK para `dOrders`. |
 | `product_id` | `text` | Chave do produto. | FK para `dProducts`. |
-| `price` | `number` | Valor unitário do item. | Mantido `decimal` para precisão de centavos. |
-| `freight_value` | `number` | Valor do frete rateado por item. | - |
+| `price` | `number` | Valor unitário do item. | **Safe Type:** Conversão forçada com Locale `en-US` para garantir precisão decimal (evitar erro de vírgula/ponto em valores monetários). |
+| `freight_value` | `number` | Valor do frete rateado por item. | **Safe Type:** Conversão forçada com Locale `en-US`. |
 
 ---
 
@@ -74,13 +74,14 @@ Avaliações dos clientes processadas por motor de NLP.
 | `Polaridade_IA` | `decimal` | Score de sentimento (-1.0 a +1.0). | **Cálculo Híbrido:** (Semântica NLP * 0.7) + (Calibração Score * 0.3).<br>Tipagem forçada para `en-US` (ponto decimal). |
 | `Sentimento_IA` | `text` | Classificação de Negócio. | `Positivo` (> 0.15), `Negativo` (< -0.15), `Neutro` (resto). |
 
-### 📍 `dCustomers`
+### 📍 `dCustomers` (Enriquecida - Geo)
 **Metadados Técnicos**
 > * **Fonte Original:** `olist_customers.csv`
+> * **Fonte Auxiliar:** `olist_geolocation.csv` (Lookup Table).
 > * **Privacidade (LGPD):** Dados anonimizados (apenas Região, sem Nome/CPF).
 > * **Granularidade:** Uma linha por Cliente/Pedido.
 
-Cadastro geográfico dos clientes.
+Cadastro geográfico dos clientes enriquecido com Lat/Long exata.
 
 | Coluna | Tipo | Descrição | Regra de Transformação |
 | :--- | :--- | :--- | :--- |
@@ -88,6 +89,8 @@ Cadastro geográfico dos clientes.
 | `customer_unique_id` | `text` | ID único do cliente (CPF mascarado). | Usado para contagem distinta (Churn/Recorrência). |
 | `customer_city` | `text` | Cidade de entrega. | Padronizada com `Text.Proper` (ex: "sao paulo" -> "Sao Paulo"). |
 | `customer_state` | `text` | Sigla do Estado (UF). | - |
+| `lat_media` | `decimal` | Latitude Média do CEP. | **Enriquecimento:** Merge com base de Geolocalização agrupada por CEP.<br>**Locale:** `en-US` para correção de ponto decimal. |
+| `long_media` | `decimal` | Longitude Média do CEP. | **Enriquecimento:** Merge com base de Geolocalização. |
 
 ### ⏰ `dTime` (Dimensão Otimizada)
 **Metadados Técnicos**
