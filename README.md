@@ -24,6 +24,9 @@ Utilizei uma abordagem Ágil (Kanban) para organizar as entregas deste case, pri
 - [x] **Item 8:** Orquestração de Pipelines (ETL)
 - [x] **Item 9:** Data App Interativo (Streamlit)
 
+#### 📹 To Do (A Fazer)
+- [ ] **Item 10:** Gravação do Vídeo de Apresentação (Storytelling)
+
 ---
 
 ## 💾 Item 1: Sobre a Base de Dados
