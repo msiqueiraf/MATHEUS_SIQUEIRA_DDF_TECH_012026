@@ -111,23 +111,32 @@ Apliquei conceitos avançados de engenharia na etapa de transformação (Power Q
 
 ---
 
-## 📊 Item 7 & Bônus 3: Análise de Dados (Power BI)
+## 📊 Item 7 & Bônus 3: Análise de Dados (Power BI & SQL)
 
+Para cumprir o requisito de análise exploratória e validação de categorias, utilizei o **SQL Lab** da Dadosfera (Engine Snowflake) antes de partir para a visualização no Power BI.
+
+### 🔍 Validação Exploratória (SQL)
+**Objetivo:** Validar a distribuição de produtos por categoria diretamente na fonte (Silver Layer), assegurando a integridade dos dados antes da modelagem.
+
+**Evidência da Execução (Query + Resultado):**
+![Resultado SQL](assets/item7_sql_query.png)
+
+### 🚀 Dashboard Executivo (Power BI)
 Para superar as expectativas de uma análise padrão, desenvolvi um **Dashboard Executivo de Alta Performance** no Power BI. O foco foi unir Engenharia de Dados robusta com uma experiência de usuário (UX) moderna e acionável.
 
 **Link para o Arquivo:** [Dashboard Power BI (.pbix)](./dashboard_analise_olist.pbix)
 
-### 🚀 Destaques de Engenharia e Performance
+#### Destaques de Engenharia e Performance
 * **Otimização da Dimensão Tempo (`dTime`):** Implementei uma tabela dimensão otimizada com granularidade de **minutos** (1.440 linhas) em vez de segundos (86.400 linhas). Isso reduz a cardinalidade e melhora a performance do motor VertiPaq, mantendo a precisão necessária para análises de pico de horário (ex: "Horário de Almoço").
 * **Controle de Filtragem (DAX Avançado):** Evitei relacionamentos bidirecionais físicos (que impactam performance). Utilizei a função **`CROSSFILTER`** via DAX para propagar filtros complexos (ex: *Categoria do Produto* impactando *SLA do Pedido*) apenas no momento do cálculo.
 
-### 🎨 UX/UI Avançado (HTML & CSS Dinâmico)
+#### UX/UI Avançado (HTML & CSS Dinâmico)
 Em vez dos cartões nativos limitados, desenvolvi um **Header Dinâmico via HTML/SVG** injetado via DAX.
 * **Visual:** Estilo *Glassmorphism* (Efeito de vidro) com sombras e bordas arredondadas via CSS.
 * **KPIs da Tríade de Vendas:** Faturamento (com formatação automática de "Bi/Mi"), Volume de Pedidos e Ticket Médio.
 * **Indicadores de Contexto:** Ícones SVG que mudam de cor e forma automaticamente baseados nos dados (ex: o ícone de Sentimento vira um "Joinha para baixo" vermelho se a aprovação cair, alertando o gestor visualmente).
 
-### 🧠 Inteligência Artificial Acionável
+#### Inteligência Artificial Acionável
 Integrei os outputs do modelo de NLP diretamente na camada visual:
 * **Monitor de Sentimento:** Um KPI exclusivo que traduz a "Polaridade Matemática" (-1 a 1) para linguagem de negócio ("Positivo", "Atenção", "Negativo"), permitindo que diretores identifiquem crises de reputação em tempo real.
 
