@@ -200,6 +200,4 @@ O desenvolvimento foi realizado utilizando o **Google Colab**. Para reproduzir l
 
 Confira a apresentação completa da solução, onde detalho a arquitetura técnica, as decisões de engenharia e navego pelas funcionalidades de toda a solução.
 
-[![Assista ao Vídeo](https://img.youtube.com/vi/Y4eDg1Gc/0.jpg)](https://www.youtube.com/watch?v=nt_Y4eDg1Gc)
-
-> **Nota:** Clique na imagem acima para ser redirecionado ao player do YouTube.
+👉 **[CLIQUE AQUI PARA ASSISTIR AO VÍDEO](https://www.youtube.com/watch?v=nt_Y4eDg1Gc)**
