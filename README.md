@@ -151,7 +151,7 @@ Focada em identificar ofensores, produtos críticos e oportunidades geográficas
 
 ![Operational Intelligence Dashboard](assets/item10_powerbi2.png)
 
-#### Destaques Técnicos (Sênior)
+#### Destaques Técnicos
 * **UX/UI Avançado:** Substituição de cartões nativos por componentes HTML/CSS injetados via DAX para flexibilidade total de design.
 * **Otimização da Dimensão Tempo (`dTime`):** Tabela dimensão otimizada com granularidade de minutos para reduzir cardinalidade e melhorar performance do VertiPaq.
 * **Glossário Integrado:** Implementação de Tooltips explicativas (Mini-manual) para garantir a governança e entendimento das métricas de IA pelo usuário final.
