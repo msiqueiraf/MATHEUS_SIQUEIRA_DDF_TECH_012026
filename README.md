@@ -23,9 +23,7 @@ Utilizei uma abordagem Ágil (Kanban) para organizar as entregas deste case, pri
 - [x] **Item 7:** Dashboard Analítico (Power BI)
 - [x] **Item 8:** Orquestração de Pipelines (ETL)
 - [x] **Item 9:** Data App Interativo (Streamlit)
-
-#### 📹 To Do (A Fazer)
-- [ ] **Item 10:** Gravação do Vídeo de Apresentação (Storytelling)
+- [x] **Item 10:** Gravação do Vídeo de Apresentação (Storytelling)
 
 ---
 
@@ -198,6 +196,8 @@ O desenvolvimento foi realizado utilizando o **Google Colab**. Para reproduzir l
 
 ---
 
-## ⏭️ Próximos Passos (Roadmap)
-- Gravação do vídeo de apresentação executiva (Item 10).
-- Implementação de alertas automáticos via Slack/Teams baseados na queda do NPS.
+## 📹 Item 10: Apresentação Executiva (Vídeo)
+
+Confira a apresentação completa da solução, onde detalho a arquitetura técnica, as decisões de engenharia e navego pelas funcionalidades do dashboard e do data app:
+
+👉 **[CLIQUE AQUI PARA ASSISTIR AO VÍDEO](https://youtu.be/nt_Y4eDg1Gc)**
