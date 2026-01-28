@@ -141,7 +141,7 @@ Focada no C-Level, consolidando a saúde financeira e logística.
 * **Breakdown de Logística:** Análise de gargalos (Lead Time) separando Aprovação, Separação e Last Mile.
 * **Top 3 Categorias:** Ranking inteligente que cruza Receita com Percepção do Cliente (IA Score).
 
-![Executive Insights Dashboard](image_f9796f.png)
+![Executive Insights Dashboard](assets/item10_powerbi1.png)
 
 #### 2. Operational Intelligence (Visão Micro/Tática)
 Focada em identificar ofensores, produtos críticos e oportunidades geográficas.
@@ -149,7 +149,7 @@ Focada em identificar ofensores, produtos críticos e oportunidades geográficas
 * **Product Deep Dive (Card 360º):** Diagnóstico automático que cruza Vendas vs. Sentimento para classificar produtos (ex: "Risco de Churn" ou "Estrela de Vendas").
 * **Geo-Intelligence:** Mapa de calor utilizando coordenadas exatas (Lat/Long) para identificar densidade de demanda.
 
-![Operational Intelligence Dashboard](image_f97936.jpg)
+![Operational Intelligence Dashboard](assets/item10_powerbi2.png)
 
 #### Destaques Técnicos (Sênior)
 * **UX/UI Avançado:** Substituição de cartões nativos por componentes HTML/CSS injetados via DAX para flexibilidade total de design.
